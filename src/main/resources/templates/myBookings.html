@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>My Bookings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+
+<!-- ✅ Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/dashboard">Bus Booking - User</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#userNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="userNavbar">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/dashboard">🏠 Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/buses/search">🔍 Search Buses</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="/bookings/my">📋 My Bookings</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/user/profile">👤 Profile</a>
+        </li>
+      </ul>
+      <span class="navbar-text text-white me-3">Welcome, [[${username}]]</span>
+      <a href="/logout" class="btn btn-outline-light">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ✅ Page Content -->
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">📋 My Bookings</h2>
+
+  <div th:if="${#lists.isEmpty(bookings)}" class="alert alert-info text-center">
+    You have no bookings yet.
+  </div>
+
+  <div th:if="${!#lists.isEmpty(bookings)}">
+    <table class="table table-bordered table-striped table-hover">
+      <thead class="table-dark text-center">
+      <tr>
+        <th>🚌 Bus</th>
+        <th>📅 Date</th>
+        <th>🪑 Seats</th>
+        <th>💰 Total Fare</th>
+        <th>🚫 Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="booking : ${bookings}">
+        <td th:text="${booking.bus.busNumber}" class="text-center"></td>
+        <td th:text="${#temporals.format(booking.bookingDate, 'dd-MM-yyyy HH:mm')}" class="text-center"></td>
+        <td th:text="${booking.seatsBooked}" class="text-center"></td>
+        <td th:text="'₹' + ${booking.totalFare}" class="text-center"></td>
+        <td class="text-center">
+          <a th:href="@{/bookings/cancel/{id}(id=${booking.id})}" class="btn btn-danger btn-sm"
+             onclick="return confirm('Are you sure you want to cancel this booking?');">Cancel</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

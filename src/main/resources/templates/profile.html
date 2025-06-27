@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>User Profile</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+
+<!-- ✅ Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/dashboard">Bus Booking - User</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarUser">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarUser">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="/dashboard">🏠 Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="/buses/search">🔍 Search Buses</a></li>
+        <li class="nav-item"><a class="nav-link" href="/bookings/my">📋 My Bookings</a></li>
+        <li class="nav-item"><a class="nav-link active" href="/user/profile">👤 Profile</a></li>
+      </ul>
+      <span class="navbar-text text-white me-3">Welcome, [[${username}]]</span>
+      <a href="/logout" class="btn btn-outline-light">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ✅ Main Container -->
+<div class="container">
+  <h2 class="mb-4">👤 User Profile</h2>
+
+  <!-- ✅ Profile Update Form -->
+  <form th:action="@{/user/profile/update}" th:object="${userProfile}" method="post" class="mb-4">
+    <div class="mb-3">
+      <label>Name</label>
+      <input type="text" th:field="*{name}" class="form-control" required />
+    </div>
+    <div class="mb-3">
+      <label>Email</label>
+      <input type="email" th:field="*{email}" class="form-control" readonly />
+    </div>
+    <button type="submit" class="btn btn-success">💾 Update Profile</button>
+  </form>
+
+  <hr>
+
+  <!-- ✅ Change Password Form -->
+  <h4 class="mb-3">🔒 Change Password</h4>
+  <form th:action="@{/user/profile/change-password}" th:object="${passwordChange}" method="post">
+    <div class="mb-3">
+      <label>Old Password</label>
+      <input type="password" th:field="*{oldPassword}" class="form-control" required />
+    </div>
+    <div class="mb-3">
+      <label>New Password</label>
+      <input type="password" th:field="*{newPassword}" class="form-control" required />
+    </div>
+    <div class="mb-3">
+      <label>Confirm New Password</label>
+      <input type="password" th:field="*{confirmPassword}" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-warning">🔁 Change Password</button>
+  </form>
+
+  <hr>
+
+  <!-- ✅ Placeholder for Payment -->
+  <div class="mt-4">
+    <a href="/user/payment-methods" class="btn btn-outline-primary">💳 Manage Payment Methods</a>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
