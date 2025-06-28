@@ -91,6 +91,9 @@ Email: admin@bus.com
 
 Password : admin123
 
+Email: pradeepcse1998@gmail.com
+
+Password : 1234
 
 5. Deployment Information
    
