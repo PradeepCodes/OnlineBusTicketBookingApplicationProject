@@ -6,6 +6,14 @@ Maven
 
 MySQL or PostgreSQL
 
+IDE (IntelliJ/Eclipse)
+
+Postman or Swagger for API testing
+
+Maven
+
+MySQL or PostgreSQL
+
 IntelliJ or Eclipse
 
 🔧 Steps to Run
