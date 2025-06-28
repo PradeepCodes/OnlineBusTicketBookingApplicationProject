@@ -69,7 +69,7 @@ DELETE /api/bookings/cancel/{id}
 
 
 4. Security & Login Credentials
-5. 
+ 
 🔑 Default Admin Credentials
 
 Use these credentials to log in as an admin
@@ -78,6 +78,8 @@ Use these credentials to log in as an admin
 
 Email: admin@bus.com
 Password : admin123
+
+
 5. Deployment Information
 🔗 Deployment URL
 Access the running project via:
