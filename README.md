@@ -59,3 +59,24 @@ GET /api/bookings/my
 
 DELETE /api/bookings/cancel/{id}
 
+
+4. Security & Login Credentials
+🔑 Default Admin Credentials
+Use these credentials to log in as an admin (if login functionality is integrated):
+
+Email: admin@bus.com
+
+5. Deployment Information
+🔗 Deployment URL
+Access the running project via:
+
+🌍 Live App:
+https://onlinebusticketbookingapplicationproject.onrender.com
+
+📘 6. API Testing (Swagger)
+🔗 Swagger UI URL
+Explore and test APIs easily using Swagger UI:
+
+📄 Swagger:
+https://onlinebusticketbookingapplicationproject.onrender.com/swagger-ui/index.html
+
