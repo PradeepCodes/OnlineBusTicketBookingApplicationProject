@@ -18,18 +18,10 @@
     </button>
     <div class="collapse navbar-collapse" id="userNavbar">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link" href="/dashboard">🏠 Dashboard</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/buses/search">🔍 Search Buses</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/bookings/my">📋 My Bookings</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/user/profile">👤 Profile</a>
-        </li>
+        <li class="nav-item"><a class="nav-link" href="/dashboard">🏠 Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link active" href="/buses/search">🔍 Search Buses</a></li>
+        <li class="nav-item"><a class="nav-link" href="/bookings/my">📋 My Bookings</a></li>
+        <li class="nav-item"><a class="nav-link" href="/user/profile">👤 Profile</a></li>
       </ul>
       <span class="navbar-text text-white me-3">Welcome, [[${username}]]</span>
       <a href="/logout" class="btn btn-outline-light">Logout</a>
@@ -38,7 +30,7 @@
 </nav>
 
 <!-- ✅ Search Form -->
-<div class="container mt-4">
+<div class="container">
   <h2>Search Buses</h2>
   <form th:action="@{/buses/search}" th:object="${bus}" method="post">
     <div class="mb-3">
@@ -51,6 +43,34 @@
     </div>
     <button type="submit" class="btn btn-primary">Search</button>
   </form>
+</div>
+
+<!-- ✅ Bus Cards -->
+<div class="container mt-5" th:if="${buses != null}">
+  <h3>Available Buses</h3>
+  <div class="row">
+    <div class="col-md-4 mb-4" th:each="bus : ${buses}">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title text-primary" th:text="${bus.busNumber}">Bus Number</h5>
+          <p class="card-text">
+            <strong>Route:</strong> <span th:text="${bus.source}"></span> → <span th:text="${bus.destination}"></span><br/>
+            <strong>Departure:</strong> <span th:text="${#temporals.format(bus.departureTime, 'dd MMM yyyy, HH:mm')}"></span><br/>
+            <strong>Arrival:</strong> <span th:text="${#temporals.format(bus.arrivalTime, 'dd MMM yyyy, HH:mm')}"></span><br/>
+            <strong>Seats Available:</strong> <span th:text="${bus.seatsAvailable}"></span><br/>
+            <strong>Fare:</strong> ₹<span th:text="${bus.fare}"></span>
+          </p>
+          <form th:action="@{'/bookings/book/' + ${bus.id}}" method="post">
+            <div class="mb-2">
+              <label class="form-label">Seats</label>
+              <input type="number" name="seats" value="1" min="1" max="10" class="form-control" required/>
+            </div>
+            <button type="submit" class="btn btn-success">🚌 Book Now</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Bootstrap JS -->

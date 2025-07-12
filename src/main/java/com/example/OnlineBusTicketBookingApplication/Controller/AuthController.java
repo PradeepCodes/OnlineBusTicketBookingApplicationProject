@@ -1,6 +1,7 @@
 package com.example.OnlineBusTicketBookingApplication.Controller;
 
 import com.example.OnlineBusTicketBookingApplication.Entity.User;
+import com.example.OnlineBusTicketBookingApplication.Service.EmailService;
 import com.example.OnlineBusTicketBookingApplication.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -11,11 +12,19 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 public class AuthController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -53,7 +62,102 @@ public class AuthController {
         }
         return "dashboard";
     }
+    @GetMapping("/forgot-password")
+    public String showForgotPasswordForm() {
+        return "forgot-password";
+    }
 
+//    @PostMapping("/forgot-password")
+//    public String processForgotPassword(@RequestParam String email,
+//                                        HttpServletRequest request, // ✅ Add this
+//                                        Model model) {
+//        Optional<User> userOptional = userService.findByEmail(email);
+//
+//        if (userOptional.isPresent()) {
+//            User user = userOptional.get();
+//            String token = UUID.randomUUID().toString();
+//            user.setResetToken(token);
+//            userService.saveUser(user); // Save token
+//
+//            // 🔗 Build reset password link
+//            String resetLink = request.getScheme() + "://" + request.getServerName() + ":" +
+//                    request.getServerPort() + "/reset-password?token=" + token;
+//
+//            // Just printing for now – replace with actual email service
+//            System.out.println("🔗 Password Reset Link: " + resetLink);
+//
+//            model.addAttribute("message", "Password reset link sent to your email!");
+//        } else {
+//            model.addAttribute("error", "No user found with that email.");
+//        }
+//
+//        return "forgot-password";
+//    }
+@PostMapping("/forgot-password")
+public String processForgotPassword(@RequestParam String email,
+                                    Model model,
+                                    HttpServletRequest request) {
+    Optional<User> userOptional = userService.findByEmail(email);
 
+    if (userOptional.isPresent()) {
+        User user = userOptional.get();
+        String token = UUID.randomUUID().toString();
+        user.setResetToken(token);
+        userService.saveUser(user);
+
+        //localhost
+//        String resetLink = request.getScheme() + "://" + request.getServerName() + ":" +
+//                request.getServerPort() + "/reset-password?token=" + token;
+
+        String resetLink = request.getRequestURL().toString()
+                .replace(request.getServletPath(), "")
+                + "/reset-password?token=" + token;
+
+        // ✅ Send email
+        emailService.sendResetPasswordEmail(email, resetLink);
+
+        model.addAttribute("message", "Reset link sent to your email!");
+    } else {
+        model.addAttribute("error", "No user found with that email.");
+    }
+
+    return "forgot-password";
+}
+    @GetMapping("/reset-password")
+    public String showResetForm(@RequestParam("token") String token, Model model) {
+        Optional<User> userOptional = userService.findByResetToken(token);
+        if (userOptional.isEmpty()) {
+            model.addAttribute("error", "Invalid or expired reset token.");
+            return "forgot-password";
+        }
+
+        model.addAttribute("token", token);
+        return "reset-password";
+    }
+    @PostMapping("/reset-password")
+    public String processResetPassword(@RequestParam String token,
+                                       @RequestParam String newPassword,
+                                       @RequestParam String confirmPassword,
+                                       Model model) {
+        Optional<User> userOptional = userService.findByResetToken(token);
+        if (userOptional.isEmpty()) {
+            model.addAttribute("error", "Invalid token.");
+            return "reset-password";
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            model.addAttribute("token", token);
+            model.addAttribute("error", "Passwords do not match.");
+            return "reset-password";
+        }
+
+        User user = userOptional.get();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setResetToken(null); // Invalidate token
+        userService.saveUser(user);
+
+        model.addAttribute("message", "✅ Password successfully reset! Please login.");
+        return "login";
+    }
 
 }

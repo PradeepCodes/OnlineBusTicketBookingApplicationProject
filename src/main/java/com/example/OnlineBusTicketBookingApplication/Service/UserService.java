@@ -15,4 +15,5 @@ public interface UserService {
 
     void updateProfile(String email, UserProfileDTO dto);
     boolean changePassword(String email, PasswordChangeDTO dto);
+     Optional<User> findByResetToken(String token);
 }

@@ -28,6 +28,13 @@ public class BookingController {
     @Autowired
     private UserService userService;
 
+    @GetMapping("/book/{busId}")
+    public String showBookingForm(@PathVariable Long busId, Model model) {
+        Bus bus = busService.getBusById(busId);
+        model.addAttribute("bus", bus);
+        return "bookingForm";  // New HTML page
+    }
+
     @PostMapping("/book/{busId}")
     public String bookBus(@PathVariable Long busId,
                           @RequestParam int seats,

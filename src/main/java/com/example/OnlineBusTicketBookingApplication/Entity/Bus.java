@@ -21,4 +21,20 @@ public class Bus {
     private int seatsAvailable;
     private double fare;
 
+    public Bus() {
+        // No-arg constructor
+    }
+
+    public Bus(String busNumber, String source, String destination,
+               LocalDateTime departureTime, LocalDateTime arrivalTime,
+               int seatsAvailable, double fare) {
+        this.busNumber = busNumber;
+        this.source = source;
+        this.destination = destination;
+        this.departureTime = departureTime;
+        this.arrivalTime = arrivalTime;
+        this.seatsAvailable = seatsAvailable;
+        this.fare = fare;
+    }
+
 }

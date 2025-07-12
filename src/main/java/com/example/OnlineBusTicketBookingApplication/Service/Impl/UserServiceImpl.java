@@ -65,5 +65,10 @@ public class UserServiceImpl implements UserService {
         }
         return false;
     }
+
+    @Override
+    public Optional<User> findByResetToken(String token) {
+        return userRepository.findByResetToken(token);
+    }
 }
 
