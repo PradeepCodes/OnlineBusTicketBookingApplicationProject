@@ -5,12 +5,18 @@ import com.example.OnlineBusTicketBookingApplication.Entity.Bus;
 import com.example.OnlineBusTicketBookingApplication.Entity.User;
 import com.example.OnlineBusTicketBookingApplication.Service.BookingService;
 import com.example.OnlineBusTicketBookingApplication.Service.BusService;
+import com.example.OnlineBusTicketBookingApplication.Service.EmailService;
 import com.example.OnlineBusTicketBookingApplication.Service.UserService;
+import com.example.OnlineBusTicketBookingApplication.Util.PdfGeneratorUtil;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +32,9 @@ import java.util.UUID;
 public class BookingController {
     @Autowired
     private BookingService bookingService;
+
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private BusService busService;
@@ -61,6 +70,15 @@ public class BookingController {
             booking.setTotalFare(seats * bus.getFare());
 
             bookingService.saveBooking(booking);
+
+            String content = String.format("Dear %s,\n\nYour booking for bus %s (%s → %s) on %s is confirmed.\n" +
+                            "Total Fare: ₹%.2f\n\nThank you for using our service!",
+                    user.getName(), bus.getBusNumber(), bus.getSource(), bus.getDestination(),
+                    bus.getDepartureTime().toLocalDate(), booking.getTotalFare());
+
+            emailService.sendBookingConfirmationEmail(user.getEmail(), "🚌 Ticket Booking Confirmed", content);
+
+
             model.addAttribute("booking", booking);
             return "bookingSuccess";
         }
@@ -126,4 +144,5 @@ public class BookingController {
         model.addAttribute("amount", bus.getFare() * seats);
         return "payment-page"; // You'll create this HTML
     }
+
 }
