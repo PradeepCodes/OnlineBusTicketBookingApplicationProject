@@ -3,20 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Confirm Booking</title>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
 <div class="container mt-5">
     <h2>Confirm Booking</h2>
-    <form th:action="@{/bookings/book/{id}(id=${bus.id})}" method="post">
+    <form id="bookingForm">
+        <input type="hidden" id="busId" th:value="${bus.id}"/>
+        <input type="hidden" id="fare" th:value="${bus.fare}"/>
+
         <div class="mb-3">
             <label class="form-label">Bus Number:</label>
             <input type="text" class="form-control" th:value="${bus.busNumber}" disabled>
         </div>
         <div class="mb-3">
             <label class="form-label">From - To:</label>
-            <input type="text" class="form-control"
-                   th:value="${bus.source + ' → ' + bus.destination}" disabled>
+            <input type="text" class="form-control" th:value="${bus.source + ' → ' + bus.destination}" disabled>
         </div>
         <div class="mb-3">
             <label class="form-label">Fare per Seat:</label>
@@ -26,9 +30,52 @@
             <label for="seats" class="form-label">No. of Seats:</label>
             <input type="number" name="seats" id="seats" min="1" max="10" class="form-control" required>
         </div>
-        <button type="submit" class="btn btn-primary">Book Now</button>
+
+        <button type="button" id="payNowBtn" class="btn btn-success">Pay & Book Now</button>
         <a href="/buses/search" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
+
+<script>
+    document.getElementById("payNowBtn").addEventListener("click", async function () {
+        const seats = parseInt(document.getElementById("seats").value);
+        const fare = parseFloat(document.getElementById("fare").value);
+        const busId = document.getElementById("busId").value;
+        const amount = seats * fare;
+
+        const response = await fetch("/create-order?amount=" + amount, {
+            method: "POST"
+        });
+
+        const order = await response.json();
+
+        const razorpayOptions = {
+            key: "rzp_test_HRBmzxk9j6RKyo", // ✅ Replace with your test key
+            amount: order.amount,
+            currency: "INR",
+            name: "Online Bus Ticket",
+            description: "Booking Payment",
+            order_id: order.id,
+            handler: function (response) {
+                fetch(`/bookings/book/${busId}?seats=${seats}`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="_csrf"]').content
+                    }
+                }).then(res => {
+                    if (res.redirected) {
+                        window.location.href = res.url;
+                    }
+                });
+            },
+            theme: {
+                color: "#198754"
+            }
+        };
+
+        const rzp = new Razorpay(razorpayOptions);
+        rzp.open();
+    });
+</script>
 </body>
 </html>

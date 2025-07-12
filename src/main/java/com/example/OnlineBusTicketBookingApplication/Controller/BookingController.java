@@ -6,6 +6,10 @@ import com.example.OnlineBusTicketBookingApplication.Entity.User;
 import com.example.OnlineBusTicketBookingApplication.Service.BookingService;
 import com.example.OnlineBusTicketBookingApplication.Service.BusService;
 import com.example.OnlineBusTicketBookingApplication.Service.UserService;
+import com.razorpay.Order;
+import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +19,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/bookings")
@@ -78,5 +83,47 @@ public class BookingController {
     public String cancelBooking(@PathVariable Long id) {
         bookingService.cancelBooking(id);
         return "redirect:/bookings/my";
+    }
+
+    @GetMapping("/create-order")
+    @ResponseBody
+    public String createOrder(@RequestParam double amount) throws RazorpayException {
+        RazorpayClient razorpay = new RazorpayClient("rzp_test_HRBmzxk9j6RKyo", "ZU4hTYJMJk98sKCMscCDTlcP");
+
+        JSONObject options = new JSONObject();
+        options.put("amount", (int)(amount * 100)); // in paise
+        options.put("currency", "INR");
+        options.put("receipt", "txn_" + UUID.randomUUID());
+        options.put("payment_capture", 1);
+
+        Order order = razorpay.orders.create(options);
+        return order.toString();
+    }
+
+
+    @PostMapping("/create-order")
+    @ResponseBody
+    public String createOrders(@RequestParam double amount) throws RazorpayException {
+        RazorpayClient razorpay = new RazorpayClient("rzp_test_HRBmzxk9j6RKyo", "ZU4hTYJMJk98sKCMscCDTlcP");
+
+        JSONObject options = new JSONObject();
+        options.put("amount", (int)(amount * 100)); // Amount in paise
+        options.put("currency", "INR");
+        options.put("receipt", "txn_" + UUID.randomUUID());
+        options.put("payment_capture", 1);
+
+        Order order = razorpay.orders.create(options);
+        return order.toString();
+    }
+
+    @GetMapping("/pay")
+    public String showPaymentPage(@RequestParam Long busId,
+                                  @RequestParam(defaultValue = "1") int seats,
+                                  Model model) {
+        Bus bus = busService.getBusById(busId);
+        model.addAttribute("bus", bus);
+        model.addAttribute("seats", seats);
+        model.addAttribute("amount", bus.getFare() * seats);
+        return "payment-page"; // You'll create this HTML
     }
 }

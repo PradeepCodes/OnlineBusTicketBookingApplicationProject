@@ -83,7 +83,7 @@
                     </p>
                 </div>
                 <div class="card-footer text-end">
-                    <a th:href="@{/bookings/book/{id}(id=${bus.id})}" class="btn btn-primary">Book Now</a>
+                    <a th:href="@{/bookings/pay(busId=${bus.id}, seats=1)}" class="btn btn-success">Book Now</a>
                 </div>
             </div>
         </div>
