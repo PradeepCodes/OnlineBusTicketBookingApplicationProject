@@ -81,9 +81,27 @@
                     <p class="card-text fs-5 fw-bold text-success">
                         ₹ <span th:text="${bus.fare}">300</span>
                     </p>
+
+                    <!-- ✅ Seat selection input -->
+                    <div class="mb-2">
+                        <label class="form-label">No. of Seats:</label>
+                        <input type="number"
+                               name="seats"
+                               min="1"
+                               th:attr="max=${bus.seatsAvailable}"
+                               value="1"
+                               class="form-control"
+                               style="width: 100px;"
+                               required />
+                    </div>
                 </div>
+
+                <!-- ✅ Book button -->
                 <div class="card-footer text-end">
-                    <a th:href="@{/bookings/pay(busId=${bus.id}, seats=1)}" class="btn btn-success">Book Now</a>
+                    <button type="button" class="btn btn-success"
+                            th:attr="onclick=|redirectToPayment(${bus.id}, this)|">
+                        Book Now
+                    </button>
                 </div>
             </div>
         </div>
@@ -93,6 +111,15 @@
         ❌ No buses found for the selected route.
     </div>
 </div>
+
+<!-- ✅ JS Function -->
+<script>
+    function redirectToPayment(busId, button) {
+        const input = button.closest('.card').querySelector('input[name="seats"]');
+        const seats = input && input.value > 0 ? input.value : 1;
+        window.location.href = `/bookings/pay?busId=${busId}&seats=${seats}`;
+    }
+</script>
 
 <!-- Bootstrap & Icons -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

@@ -159,6 +159,17 @@ public class BookingController {
         return "payment-page"; // You'll create this HTML
     }
 
+    @PostMapping("/pay")
+    public String showPaymentPages(@RequestParam Long busId,
+                                   @RequestParam(defaultValue = "1") int seats,
+                                  Model model) {
+        Bus bus = busService.getBusById(busId);
+        model.addAttribute("bus", bus);
+        model.addAttribute("seats", seats);
+        model.addAttribute("amount", bus.getFare() * seats);
+        return "payment-page";
+    }
+
     @GetMapping("/invoice/{bookingId}")
     public ResponseEntity<byte[]> downloadInvoice(@PathVariable Long bookingId) throws Exception {
         Booking booking = bookingService.getBookingById(bookingId)
