@@ -30,17 +30,40 @@
 </nav>
 
 <!-- ✅ Search Form -->
+<!--<div class="container">-->
+<!--  <h2>Search Buses</h2>-->
+<!--  <form th:action="@{/buses/search}" th:object="${bus}" method="post">-->
+<!--    <div class="mb-3">-->
+<!--      <label for="source" class="form-label">Source</label>-->
+<!--      <input type="text" id="source" th:field="*{source}" class="form-control" placeholder="Enter source city"/>-->
+<!--    </div>-->
+<!--    <div class="mb-3">-->
+<!--      <label for="destination" class="form-label">Destination</label>-->
+<!--      <input type="text" id="destination" th:field="*{destination}" class="form-control" placeholder="Enter destination city"/>-->
+<!--    </div>-->
+<!--    <button type="submit" class="btn btn-primary">Search</button>-->
+<!--  </form>-->
+<!--</div>-->
+
 <div class="container">
   <h2>Search Buses</h2>
   <form th:action="@{/buses/search}" th:object="${bus}" method="post">
     <div class="mb-3">
       <label for="source" class="form-label">Source</label>
-      <input type="text" id="source" th:field="*{source}" class="form-control" placeholder="Enter source city"/>
+      <select id="source" th:field="*{source}" class="form-select">
+        <option value="">-- Select Source --</option>
+        <option th:each="src : ${sources}" th:value="${src}" th:text="${src}"></option>
+      </select>
     </div>
+
     <div class="mb-3">
       <label for="destination" class="form-label">Destination</label>
-      <input type="text" id="destination" th:field="*{destination}" class="form-control" placeholder="Enter destination city"/>
+      <select id="destination" th:field="*{destination}" class="form-select">
+        <option value="">-- Select Destination --</option>
+        <option th:each="dest : ${destinations}" th:value="${dest}" th:text="${dest}"></option>
+      </select>
     </div>
+
     <button type="submit" class="btn btn-primary">Search</button>
   </form>
 </div>

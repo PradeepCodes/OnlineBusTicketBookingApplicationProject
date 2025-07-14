@@ -20,6 +20,17 @@ public class BusServiceImpl implements BusService {
         return busRepository.save(bus);
     }
 
+
+    @Override
+    public List<String> getAllSources() {
+        return busRepository.findDistinctSources();
+    }
+
+    @Override
+    public List<String> getAllDestinations() {
+        return busRepository.findDistinctDestinations();
+    }
+
     @Override
     public List<Bus> getAllBuses() {
 

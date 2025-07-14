@@ -12,4 +12,9 @@ public interface BusService {
     Bus getBusById(Long id);
     void deleteBusById(Long id);
     List<Bus> searchBuses(String source, String destination);
+
+
+    List<String> getAllSources();
+
+    List<String> getAllDestinations();
 }

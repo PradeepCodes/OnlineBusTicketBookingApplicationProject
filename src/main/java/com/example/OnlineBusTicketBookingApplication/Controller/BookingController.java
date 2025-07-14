@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+
 @Controller
 @RequestMapping("/bookings")
 public class BookingController {
@@ -76,8 +77,21 @@ public class BookingController {
                     user.getName(), bus.getBusNumber(), bus.getSource(), bus.getDestination(),
                     bus.getDepartureTime().toLocalDate(), booking.getTotalFare());
 
-            emailService.sendBookingConfirmationEmail(user.getEmail(), "🚌 Ticket Booking Confirmed", content);
+          //  emailService.sendBookingConfirmationEmail(user.getEmail(), "🚌 Ticket Booking Confirmed", content);
+            try {
+               // byte[] pdfBytes = PdfGenerator.generateBookingInvoice(booking);
+                byte[] pdfBytes = PdfGeneratorUtil.generateInvoice(booking);
 
+                emailService.sendBookingInvoiceWithAttachment(
+                        user.getEmail(),
+                        "🚌 Ticket Booking Confirmed",
+                        content,
+                        pdfBytes
+                );
+
+            } catch (Exception e) {
+                e.printStackTrace(); // optionally log or show message
+            }
 
             model.addAttribute("booking", booking);
             return "bookingSuccess";
@@ -145,4 +159,17 @@ public class BookingController {
         return "payment-page"; // You'll create this HTML
     }
 
+    @GetMapping("/invoice/{bookingId}")
+    public ResponseEntity<byte[]> downloadInvoice(@PathVariable Long bookingId) throws Exception {
+        Booking booking = bookingService.getBookingById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
+
+        byte[] pdf = PdfGeneratorUtil.generateInvoice(booking);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "invoice.pdf");
+
+        return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
+    }
 }

@@ -20,6 +20,13 @@ public class BusController {
     @GetMapping("/search")
     public String showSearchForm(Model model) {
         model.addAttribute("bus", new Bus());
+
+        List<String> sources = busService.getAllSources();
+        List<String> destinations = busService.getAllDestinations();
+
+        model.addAttribute("sources", sources);
+        model.addAttribute("destinations", destinations);
+
         return "searchBus";
     }
 
