@@ -103,7 +103,7 @@ Access the running project via:
 
 🌍 Live App:
 
-https://onlinebusticketbookingapplicationproject.onrender.com
+https://onlinebusticketbookingapplicationproject-rvdq.onrender.com/
 
 📘 6. API Testing (Swagger)
 
@@ -113,5 +113,4 @@ Explore and test APIs easily using Swagger UI:
 
 📄 Swagger:
 
-https://onlinebusticketbookingapplicationproject.onrender.com/swagger-ui/index.html
-
+https://onlinebusticketbookingapplicationproject-rvdq.onrender.com/swagger-ui/index.html
